@@ -1,3 +1,0 @@
-this is file.txt
-hello world
-hola mundo
