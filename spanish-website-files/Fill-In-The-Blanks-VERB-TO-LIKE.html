@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Replace Words Web Application</title>
+	<style>
+		h1 {
+			color: darkblue;
+			font-family: Arial, sans-serif;
+			text-align: center;
+			margin-top: 20px;
+		}
+		.question {
+			margin: 30px auto;
+			width: 80%;
+			max-width: 800px;
+			padding: 20px;
+			background-color: white;
+			border: 2px solid darkgray;
+			border-radius: 10px;
+			line-height: 30pt;
+		}
+		.feedback {
+			margin: 10px auto;
+			width: 80%;
+			max-width: 800px;
+			padding: 20px;
+			background-color: PaleGreen;
+			border: 2px solid darkgray;
+			border-radius: 10px;
+			line-height: 20pt;
+			font-weight: bold;
+			text-align: center;
+		}		
+		form {
+			margin: 20px auto;
+			width: 80%;
+			max-width: 800px;
+			padding: 20px;
+			background-color: aliceblue;
+			border: 2px solid darkgray;
+			border-radius: 10px;
+			line-height: 30pt;
+		}
+
+		.btn-container {
+			display: flex;
+			justify-content: space-between;
+			margin-top: 20px;
+		}
+
+		button {
+			padding: 10px;
+			border-radius: 5px;
+			border: none;
+			font-weight: bold;
+			font-size: 1.1em;
+			cursor: pointer;
+		}
+
+		.submit-btn {
+			background-color: mediumseagreen;
+			color: white;
+		}
+
+		.clear-btn {
+			background-color: white;
+			color: black;
+			border: 2px solid darkgray;
+		}
+
+		.clear-btn:hover {
+			background-color: darkgray;
+			color: white;
+		}
+
+		input[type=text] {
+			padding: 5px;
+			border-radius: 5px;
+			border: 2px solid darkgray;
+			font-size: 1.1em;
+			margin-right: 5px;
+			width: 150px;
+		}
+
+		.correct {
+			color: green;
+			font-weight: bold;
+		}
+
+		.incorrect {
+			background-color: lemonchiffon;
+			color: red;
+		}
+	</style>
+	<script>
+	// Define the sentences as an array of strings.
+	const sentences = [
+		"#No me #gusta caminar. (hint: dislike)",
+		"A ustedes #no #les gusta caminar. (hint: dislike)",
+		"Le #gusta salir a pasear.",
+		"No les #gusta ir a los parques. (hint: dislike)",
+		"Le #gusta visitar parques.",
+		"Le #gustan los museos.",
+		"A usted #le #gusta visitar monumentos.",
+		"Me #gusta ver televisión.",
+		"A ti #te #gusta visitar parques.",
+		"#No les #gustan las películas. (hint: dislike)",
+		"A #ustedes no #les gusta ver televisión. (hint: you all (for.))",
+		"A #vosotros no os #gusta tomar fotos. (hint: masculine)",
+		"#No nos #gusta tomar el sol. (hint: dislike)",
+		"A #ella no #le gusta tomar agua. (hint: she)",
+		"No le #gusta tocar el piano. (hint: dislike)",
+		"A usted no #le #gusta tocar la guitarra. (hint: dislike)",
+		"A #ti no #te #gusta tocar instrumentos musicales.",
+		"No #me #gusta tocar los perros. (hint: I)",
+		"#Les #gusta practicar piano. (hint: they like)",
+		"A #ustedes #les #gusta practicar yoga. (hint: you all (for.))",
+		"A #vosotros #os gusta practicar deportes. (hint: you all (inf.))",
+		"Nos #gusta practicar español.",
+		"A #ella #le gusta pintar. (hint: she)",
+		"#Le #gusta pescar.  (hint: he/she likes)",
+		"A usted #le #gusta patinar.",
+		"A #ti te #gusta hacer turismo.",
+		"Me #gusta pasear.",
+		"#No les #gusta escuchar música. (hint: dislike)",
+		"A ustedes no #les gusta escuchar.",
+		"A #vosotros no #os gusta nadar. (hint: you all (inf.) masculine)",
+		"No nos #gusta andar en bicicleta.",
+		"#No le gusta montar a caballo. (hint: dislike)",
+		"No le gusta montar en bicicleta. (hint: dislike)",
+		"A usted no #le #gusta el tiempo libre. (hint: dislike)",
+		"A #ti no te gusta leer revistas. (hint: dislike)",
+		"A mi no #me gusta leer el periódico. (hint: dislike)",
+		"Les #gusta leer libros.",
+		"A ustedes #les gusta leer.",
+		"A #vosotros os #gusta la diversión. (hint: masculine)",
+		"Nos #gusta divertirnos.",
+		"A ella #le gusta jugar futból.",
+		"A usted #le #gusta ir de compras.",
+		"A #ti te #gusta ir de excursión.",
+		"Me #gustan los parques.",
+		"A ustedes no #les #gustan los ejercicios.",
+		"A #vosotras no #os gusta hacer arte. (hint: feminine)",
+		"#No nos gusta hacer yoga. (hint: dislike)",
+		"#No le #gusta esquiar. (hint: dislike)",
+		"A usted no #le #gusta escuchar música. (hint: dislike)",
+		"A #ti no te #gustan los poemas.",
+		"#No me #gusta escribir poemas. (hint: dislike)",
+		"Les #gustan las canciones.",
+		"A #ustedes les gusta escribir cartas. (hint: you all (for.))",
+		"A #vosotros #os #gusta escribir. (hint: you all (inf.))",
+		"#Nos gusta escalar montañas. (hint: we like)",
+		"Le #gustan los videojuegos.",
+		"#Le #gusta el videojuego. (hint: he/she likes)",
+		"Me #gusta correr.",
+		"#No les #gusta cocinar. (hint: dislike)",
+		"A vosotros #no #os gusta bucear. (hint: dislike)",
+		"#No nos #gusta bailar. (hint: dislike)",
+		"A #ella #no le #gusta andar en patineta. (hint: she doesn't like)",
+		"#No le #gusta andar en bicicleta. (hint: dislike)",
+		"A #usted no le gusta montar a caballo. (hint: you (for.))",
+		"A usted #le #gusta el pasatiempo.",
+		"A ti #te #gusta el fin de semana.",
+		"A #ti #no te gusta ir en carro. (hint: dislike)"
+	];
+
+	// Define the function that will replace words in a sentence with input boxes.
+	function replaceWords(sentence) {
+		// Split the sentence into words.
+		const words = sentence.split(" ");
+
+		// Create an array to hold the replaced words.
+		const replacedWords = [];
+
+		// Loop through the words in the sentence.
+		for (let i = 0; i < words.length; i++) {
+			const word = words[i];
+			// If the word starts with a #, replace it with an input box.
+			if (word.startsWith("#")) {
+				const inputId = `input-${replacedWords.length}`;
+				const input = `<input type="text" id="${inputId}" data-sentence="${sentence}" data-word="${word.slice(1)}">`;
+				replacedWords.push(input);
+		} else {
+			// Otherwise, keep the word as-is.
+			replacedWords.push(word);
+		}
+	}
+
+	// Join the replaced words back into a sentence.
+	const replacedSentence = replacedWords.join(" ");
+
+	// Return the replaced sentence.
+	return replacedSentence;
+	}
+
+	// Define the function that will handle the form submission.
+	function handleSubmit(event) {
+		// Prevent the form from actually submitting.
+		event.preventDefault();
+
+		// Remove any success message.
+		const prev_message = document.querySelector(".btn-container p");
+		if (prev_message) {
+			prev_message.parentNode.removeChild(prev_message);
+		}
+		
+		// Get all the input elements.
+		const inputs = document.querySelectorAll("input[type='text']");
+
+		// Loop through the input elements.
+		for (let i = 0; i < inputs.length; i++) {
+			const input = inputs[i];
+
+			// Get the expected value of the input.
+			const expectedValue = input.dataset.word;
+
+			// Get the actual value of the input.
+			const actualValue = input.value.trim();
+
+			// If the actual value matches the expected value, mark the input as correct.
+			if (actualValue === expectedValue) {
+				//CORRECT answer
+				input.parentNode.classList.remove("incorrect");
+				input.parentNode.classList.add("correct");
+			} else {
+				//INCORRECT answer
+				input.parentNode.classList.remove("correct");
+				input.parentNode.classList.add("incorrect");
+			}
+		}
+
+		// Get all the correct inputs.
+		const correctInputs = document.querySelectorAll(".correct input[type='text']");
+
+		// If all the inputs are correct, show a success message.
+		//const message = document.createElement("p");
+		if (correctInputs.length === inputs.length) {
+			displayFeedback("Great job, you got all answers correct!");
+		} else {
+			displayFeedback("Some answers are incorrect, please check the highlighted sentences in red, and try again!");
+		}		
+		
+	}
+
+	// Define the function that will handle the clear button click.
+	function handleClear(event) {
+		if (userAnswersYes("Are you sure you want to clear your answers?")) {
+			displayFeedback("All right. Let's go and do your best!");
+			// Get all the input elements.
+			const inputs = document.querySelectorAll("input[type='text']");
+
+			// Loop through the input elements.
+			for (let i = 0; i < inputs.length; i++) {
+				const input = inputs[i];
+
+				// Clear the value of the input.
+				input.value = "";
+
+				// Remove the correct and incorrect classes from the input's parent element.
+				input.parentNode.classList.remove("correct", "incorrect");
+			}
+			displayFeedback("Let's go and do your best!")
+			// Remove any success message.
+			const message = document.querySelector(".btn-container p");
+			if (message) {
+				message.parentNode.removeChild(message);
+			}
+		}
+	}
+	
+	function clearElementByID(elementID) {
+		
+		var element = document.getElementById(elementID);
+		if (element && element.innerHTML) {
+		  element.innerHTML = "";
+		  //alert("clear: " + elementID);
+		}
+	
+	}
+	
+	function deleteElementByID(elementID) {
+		
+		var element = document.getElementById(elementID);
+		if (element && element.innerHTML) {
+		  element.remove();
+		 // alert("removed: " + elementID);
+		}
+	
+	}
+	
+	function hideElementByID(elementID) {
+		var element = document.getElementById(elementID);
+		if (element && element.innerHTML) {
+		  element.style.display = "none";
+		}		
+	}
+	
+	function unhideElementByID(elementID) {
+		var element = document.getElementById(elementID);
+		if (element && element.innerHTML) {
+		  element.style.display = "block";
+		}				
+	}
+	
+	function userAnswersYes(question) {
+	  const answer = confirm(question);
+	  return answer;
+	}
+	
+	function displayFeedback(feedback) {
+		//alert (feedback);
+		const feedbacksectionDiv = document.querySelector("#feedbacksection");
+		feedbacksectionDiv.innerHTML =feedback;
+		//feedbacksectionDiv.appendChild(feedback);
+	}
+	
+	function handleNewSentences () {
+		if (userAnswersYes("Do you want to try new sentences?")) {
+			displayFeedback("Let's go and do your best!");
+			// Remove previous sentences if any.
+			clearElementByID("sentences");				
+
+			// Get the text element with the # of sentences user wants
+			const numSentences = document.querySelector("#number-of-sentences");
+
+
+			// Get the div element where the sentences will be displayed.
+			const sentenceDiv = document.querySelector("#sentences");
+		
+			
+			// Pick a random subset of sentences.
+			const randomSentences = sentences.sort(() => Math.random() - 0.5).slice(0, numSentences.value);
+
+			countSentence = 1;
+			//alert("New # of sentences: " + numSentences.value)
+			randomSentences.forEach(sentence => {
+				const replacedSentence = countSentence + ". " + replaceWords(sentence);
+				const sentenceElement = document.createElement("div");
+				sentenceElement.classList.add("sentence");
+				sentenceElement.innerHTML = replacedSentence;
+				sentenceDiv.appendChild(sentenceElement);
+				countSentence++;
+			});
+			//const otro = prompt("What is going on? " + numSentences.value);
+		}
+	}
+	
+		// Wait for the DOM to load.
+		document.addEventListener("DOMContentLoaded", ()=> {
+			event.preventDefault();
+			
+			// Add a click event listener to the new sentences button.
+			const newSentencesButton = document.querySelector("#new-sentences-button");
+			newSentencesButton.addEventListener("click", handleNewSentences);
+
+			//Add a submit event listener to the form.		
+			const form = document.querySelector("form");
+			form.addEventListener("submit", handleSubmit);
+			
+			// Add a click event listener to the clear button.
+			const clearButton = document.querySelector("#clear-button");
+			clearButton.addEventListener("click", handleClear);
+		});
+	
+	
+
+
+	
+	
+	
+</script>
+</head>
+<body>
+
+	<div id="howmanysentences" class="question" >
+		How many sentences do you want to try? (1-10): 
+		
+		<input type="number" id="number-of-sentences" name="number-input" min="1" max="10" step="1" required>
+		<button type="button" id="new-sentences-button">New Sentences</button>
+
+	</div>
+	
+	<div id="feedbacksection" class="feedback" > 
+
+	</div>	
+
+<form>
+	<div id="sentences"></div>
+
+	<div class="btn-container">
+		<button type="submit">Submit Answers</button>
+		<button type="button" id="clear-button">Clear Answers</button>
+		
+	</div>
+</form>
+</body>
+</html>
